@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataMind BI — Agent Đọc Bối Cảnh, Phân Tích Dữ Liệu &amp; Đề Xuất Giải Pháp</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- ==================================================================== -->
+  <!-- MODERN TECH BI HERO (MATCHING IMAGE 1 DARK GRID & 3 ACTION BUTTONS)  -->
+  <!-- ==================================================================== -->
+  <section class="modern-hero" id="top">
+    <div class="hero-tech-grid"></div>
+    <canvas id="constellation-canvas"></canvas>
+
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <a href="#top" class="brand-pill">
+        <span class="brand-mark">BI</span>
+        <span>DataMind Studio</span>
+      </a>
+
+      <div class="top-nav-right" style="display:none;">
+        <div class="api-pill-box" title="Đã tích hợp sẵn Google Gemini API Key của bạn">
+          <span style="color:#34d399;font-size:10px;">●</span>
+          <select id="global-llm-provider">
+            <option value="gemini" style="color:#0f172a;">Gemini AI</option>
+            <option value="openai" style="color:#0f172a;">OpenAI API</option>
+          </select>
+          <input type="password" id="global-api-key" value="AQ.Ab8RN6LlTt916N-uJPIVXMrS9Raqh6qQvS22nJ_s5JqapdulDw"
+            placeholder="API Key..." />
+        </div>
+
+        <button class="btn-nav-outline" onclick="window.exportWorkflowProcessedCSV()">
+          📥 Xuất CSV
+        </button>
+        <button class="btn-nav-outline" onclick="window.exportWorkflowReportWord()">
+          📄 Xuất Word
+        </button>
+        <button class="btn-nav-outline" onclick="window.openExecutiveReportModal()">
+          📑 Xem Báo cáo
+        </button>
+        <button class="btn-nav-ai" onclick="window.scrollToStep('copilot')" title="Hỏi đáp trực tiếp với Trợ lý AI">
+          🤖 Hỏi AI
+        </button>
+        <a href="slide.html" target="_blank" class="btn-nav-outline" style="border-color:#38bdf8;color:#0284c7;font-weight:700;text-decoration:none;" title="Xem Slide Trình Chiếu Quy Trình Workflow">
+          📊 Slide Workflow
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Center Headline & Image 1 Action Bar -->
+    <div class="hero-center">
+      <div class="hero-badge-pill">
+        <span>✦</span>
+        <span>AI Agent Phân Tích Dữ Liệu &amp; Đề Xuất Giải Pháp Doanh Nghiệp</span>
+      </div>
+
+      <h1 class="hero-main-title">
+        Đọc bối cảnh. Phân tích số liệu.<br />
+        <span>Đề xuất giải pháp tức thì.</span>
+      </h1>
+
+      <p class="hero-sub-caption">
+        Làm sạch dữ liệu tự động, phát hiện chính xác vị trí lỗi, khám phá chỉ số BI đa chiều và tạo báo cáo đề xuất
+        giải pháp có vòng lặp phản hồi thông minh.
+      </p>
+
+      <!-- IMAGE 1: 3 NÚT HÀNH ĐỘNG CHÍNH -->
+      <div class="hero-bi-actions">
+        <button type="button" class="btn-start-analysis" onclick="window.openBIWorkspaceAndFocus()">
+          <span>Bắt đầu phân tích</span>
+          <span style="font-size:18px;">→</span>
+        </button>
+
+        <button type="button" class="btn-run-bi-sample" onclick="window.runBISampleDemo()">
+          <span style="color:#38bdf8;font-size:18px;">✨</span>
+          <span>Chạy thử Mẫu BI</span>
+        </button>
+
+        <button type="button" class="btn-test-error-flow" onclick="window.runBIErrorFlowTest()">
+          <span>Test luồng lỗi</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================== -->
+  <!-- MAIN WORKSPACE (IMAGE 2 EXACT INTERFACE + MODERN TABBED RESULTS)     -->
+  <!-- ==================================================================== -->
+  <main class="main-container" id="workspace-anchor">
+
+    <div class="bi-workspace-layout">
+
+      <!-- CỘT TRÁI: THANH TIẾN TRÌNH 5 BƯỚC XẾP DỌC (VERTICAL WORKFLOW SIDEBAR) -->
+      <aside class="bi-workflow-sidebar">
+        <div class="bi-sidebar-card">
+          <div class="sidebar-header">
+            <div class="sidebar-badge">Quy trình BI Agent</div>
+            <div class="sidebar-title">Tiến trình 5 Bước</div>
+          </div>
+
+          <!-- Danh sách 5 bước xếp dọc -->
+          <div class="vertical-stepper-list">
+
+            <!-- BƯỚC 1 -->
+            <div class="v-step-item active" id="fc-node-input" onclick="window.scrollToStep('input')"
+              title="Bấm để đến Bước 1">
+              <div class="v-step-indicator">
+                <div class="v-step-bullet">
+                  <span class="v-step-num">1</span>
+                  <span class="v-step-check">✓</span>
+                </div>
+                <div class="v-step-line"></div>
+              </div>
+              <div class="v-step-content">
+                <div class="step-title-text">1. Nhập dữ liệu</div>
+                <div class="v-step-desc">Bối cảnh &amp; tệp số liệu</div>
+              </div>
+            </div>
+
+            <!-- BƯỚC 2 -->
+            <div class="v-step-item" id="fc-node-process" onclick="window.scrollToStep('process')"
+              title="Bấm để đến Bước 2">
+              <div class="v-step-indicator">
+                <div class="v-step-bullet">
+                  <span class="v-step-num">2</span>
+                  <span class="v-step-check">✓</span>
+                </div>
+                <div class="v-step-line"></div>
+              </div>
+              <div class="v-step-content">
+                <div class="step-title-text">2. Agent xử lý</div>
+                <div class="v-step-desc">Làm sạch &amp; tính toán</div>
+              </div>
+            </div>
+
+            <!-- BƯỚC 3 -->
+            <div class="v-step-item" id="fc-node-check" onclick="window.scrollToStep('check')"
+              title="Bấm để đến Bước 3">
+              <div class="v-step-indicator">
+                <div class="v-step-bullet">
+                  <span class="v-step-num">3</span>
+                  <span class="v-step-check">✓</span>
+                  <span class="v-step-err">✕</span>
+                </div>
+                <div class="v-step-line"></div>
+              </div>
+              <div class="v-step-content">
+                <div class="step-title-text">3. Hợp lệ (Yes)</div>
+                <div class="v-step-desc" id="fc-node-check-sub">Kiểm định chuẩn số liệu</div>
+              </div>
+            </div>
+
+            <!-- BƯỚC 4 -->
+            <div class="v-step-item" id="fc-node-evaluate" onclick="window.scrollToStep('evaluate')"
+              title="Bấm để đến Bước 4">
+              <div class="v-step-indicator">
+                <div class="v-step-bullet">
+                  <span class="v-step-num">4</span>
+                  <span class="v-step-check">✓</span>
+                </div>
+                <div class="v-step-line"></div>
+              </div>
+              <div class="v-step-content">
+                <div class="step-title-text">4. Đánh giá &amp; Phản hồi</div>
+                <div class="v-step-desc">Báo cáo &amp; đề xuất</div>
+              </div>
+            </div>
+
+            <!-- PHẦN HỎI AI (DATA COPILOT) -->
+            <div class="v-step-item" id="fc-node-copilot" onclick="window.scrollToStep('copilot')" title="Bấm để mở Trợ lý Hỏi AI">
+              <div class="v-step-indicator">
+                <div class="v-step-bullet" style="background:#0284c7;color:#ffffff;box-shadow:0 0 0 3px rgba(2,132,199,0.18);">
+                  <span style="font-size:12px;">💬</span>
+                </div>
+                <div class="v-step-line"></div>
+              </div>
+              <div class="v-step-content">
+                <div class="step-title-text" style="color:#0284c7;font-weight:700;">Hỏi AI (Copilot)</div>
+                <div class="v-step-desc">Hỏi đáp số liệu trực tiếp</div>
+              </div>
+            </div>
+
+            <!-- BƯỚC 5 -->
+            <div class="v-step-item" id="fc-node-export" onclick="window.scrollToStep('export')"
+              title="Bấm để đến Bước 5">
+              <div class="v-step-indicator">
+                <div class="v-step-bullet">
+                  <span class="v-step-num">5</span>
+                  <span class="v-step-check">✓</span>
+                </div>
+              </div>
+              <div class="v-step-content">
+                <div class="step-title-text">5. Đánh giá &amp; Xuất</div>
+                <div class="v-step-desc">Tải Word &amp; CSV</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Trạng thái hệ thống -->
+          <div class="sidebar-status-box">
+            <div class="sidebar-status-label">Trạng thái hiện tại</div>
+            <div class="version-pill" id="wf-version-indicator"
+              style="width:100%;justify-content:center;text-align:center;">Bước 1: Sẵn sàng nhập dữ liệu</div>
+          </div>
+
+          <!-- Card truy cập nhanh Hỏi AI ở Sidebar -->
+          <div class="sidebar-copilot-banner" onclick="window.scrollToStep('copilot')" title="Nhấn để mở ngay Trợ lý Hỏi AI">
+            <div style="display:flex;align-items:center;gap:7px;">
+              <span class="copilot-live-dot"></span>
+              <strong style="color:#0284c7;font-size:12.5px;">💬 Hỏi AI Trực Tiếp</strong>
+            </div>
+            <div style="font-size:11.5px;color:#64748b;margin-top:4px;line-height:1.4;">
+              Chat tra cứu số liệu, so sánh 3 miền &amp; tư vấn chiến lược
+            </div>
+            <div style="margin-top:8px;">
+              <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#e0f2fe;color:#0369a1;font-size:11px;font-weight:700;">
+                Mở Chat AI ▷
+              </span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CỘT PHẢI: NỘI DUNG LÀM VIỆC CHÍNH (MAIN WORKSPACE CONTENT) -->
+      <section class="bi-workflow-main-content">
+
+        <!-- KHUNG NHẬP BỐI CẢNH & DỮ LIỆU THÔ 2 CỘT (KHỚP 100% ẢNH 2) -->
+        <div class="bi-main-card" id="bi-input-card-section">
+          <div class="bi-two-col-grid">
+
+            <!-- CỘT TRÁI: Bối cảnh & Bài toán BI -->
+            <div>
+              <div class="bi-col-header">
+                <span class="bi-col-title">Bối cảnh &amp; Bài toán BI</span>
+                <div style="display:flex;gap:14px;align-items:center;">
+                  <button type="button" class="bi-quick-fill-link" style="color:#059669;"
+                    onclick="window.openScopeDiscoveryPanel()">
+                    ✨ Trao đổi phạm vi với AI
+                  </button>
+                  <button type="button" class="bi-quick-fill-link" onclick="window.fillBIExampleQuickly()">
+                    Điền nhanh ví dụ
+                  </button>
+                </div>
+              </div>
+
+              <div class="bi-field-group">
+                <label class="bi-field-label" for="bi-business-context">Bối cảnh doanh nghiệp</label>
+                <input type="text" id="bi-business-context" class="bi-input"
+                  placeholder="VD: Doanh nghiệp bán lẻ đa kênh tại 3 khu vực Bắc, Trung, Nam" />
+              </div>
+
+              <div class="bi-field-group">
+                <label class="bi-field-label" for="bi-problem-input">Vấn đề cần Agent giải quyết</label>
+                <textarea id="bi-problem-input" class="bi-textarea"
+                  placeholder="VD: Làm sạch số liệu tiền tệ hỗn hợp, lọc đơn hủy và phân tích doanh thu theo kênh"></textarea>
+              </div>
+            </div>
+
+            <!-- CỘT PHẢI: Dữ liệu thô (.xlsx, .csv, .json) -->
+            <div>
+              <div class="bi-col-header" style="margin-bottom:12px;">
+                <span class="bi-field-label" style="margin-bottom:0;font-weight:700;">Dữ liệu thô (.xlsx, .csv,
+                  .json)</span>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                  <button type="button" class="bi-quick-fill-link" style="color:#0284c7;font-weight:700;"
+                    onclick="window.switchDataInputTab('upload')" id="tab-btn-upload">
+                    📁 Tải file
+                  </button>
+                  <button type="button" class="bi-quick-fill-link" style="color:#64748b;font-weight:500;"
+                    onclick="window.switchDataInputTab('paste')" id="tab-btn-paste">
+                    📋 Dán bảng số liệu
+                  </button>
+                  <button type="button" class="bi-quick-fill-link" style="color:#059669;font-weight:600;"
+                    onclick="window.loadSampleDatasetIntoRightColumn(false)">
+                    ⚡ Nạp dữ liệu mẫu
+                  </button>
+                  <a href="du_lieu_ban_le_da_kenh_3_mien.csv" download="du_lieu_ban_le_da_kenh_3_mien.csv"
+                    class="bi-quick-fill-link" style="color:#d97706;font-weight:600;text-decoration:none;"
+                    title="Tải tệp CSV này về máy tính để thử chọn tệp từ máy">
+                    📥 Tải file mẫu .csv
+                  </a>
+                </div>
+              </div>
+
+              <!-- Khung kéo thả / Chọn tệp dữ liệu từ máy (Khớp Ảnh 2) -->
+              <label class="bi-dropzone" id="bi-dropzone-box">
+                <input type="file" id="wf-raw-file-input" accept=".xlsx,.csv,.json,.txt,.md" style="display:none;" />
+                <div class="bi-dropzone-icon">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                    <path d="M12 13v8" />
+                    <path d="m9 16 3-3 3 3" />
+                  </svg>
+                </div>
+                <div class="bi-dropzone-title" id="bi-dropzone-title-text">Chọn tệp dữ liệu từ máy</div>
+                <div class="bi-dropzone-sub" id="bi-dropzone-sub-text">Hỗ trợ Excel (.xlsx), CSV, JSON</div>
+              </label>
+
+              <!-- Khung dán CSV/JSON trực tiếp (Hiện khi bấm "Dán bảng số liệu") -->
+              <div id="bi-paste-container" style="display:none;">
+                <textarea id="wf-rawdata-input" class="bi-textarea"
+                  style="min-height:168px;font-family:monospace;font-size:12px;"
+                  placeholder="Dán nội dung bảng số liệu CSV hoặc JSON vào đây...&#10;Ví dụ:&#10;Ky_Thang,Ma_Kenh,Ten_Kenh,Khu_Vuc,Doanh_Thu,Chi_Phi&#10;2026-10,CH-01,Showroom HN,Miền Bắc,2850,340&#10;2026-10,CH-02,Shopee Bắc,Miền Bắc,1920,540"
+                  oninput="window.updateRawPreviewBox()"></textarea>
+              </div>
+
+              <!-- Bảng xem trước dữ liệu số đầu vào (Hiện khi đã nạp số liệu thực tế) -->
+              <div id="bi-raw-preview-box"
+                style="display:none;margin-top:10px;padding:12px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;font-size:12px;">
+              </div>
+
+              <!-- Khung cảnh báo khi người dùng chưa nhập dữ liệu mà bấm chạy -->
+              <div id="bi-data-validation-alert" style="display:none;margin-top:12px;"></div>
+
+              <!-- Nút Chạy phân tích BI màu đen xanh đậm toàn chiều ngang (Khớp Ảnh 2) -->
+              <button type="button" id="btn-run-workflow-main" class="btn-run-bi-dark"
+                onclick="window.executeEnterpriseWorkflowStep2()">
+                <span id="btn-run-icon" style="color:#06b6d4;font-size:15px;">▷</span>
+                <span id="btn-run-label">Chạy phân tích BI</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- KHUNG TRAO ĐỔI PHẠM VI PHÂN TÍCH VỚI AI (AI SCOPE DISCOVERY) -->
+        <div class="card" id="bi-scope-discovery-panel" style="display:none;border-left:4px solid #059669;"></div>
+
+        <!-- NHÁNH NO (NẾU KHÔNG XỬ LÝ ĐƯỢC -> TRẢ VỀ KẾT QUẢ LỖI NHƯ THẾ NÀO VÀ Ở ĐÂU) -->
+        <div id="wf-error-branch-panel" class="error-diagnostic-box" style="display:none;"></div>
+
+        <!-- NHÁNH YES: KHÔNG GIAN KẾT QUẢ HIỆN ĐẠI, DỄ NHÌN & THÂN THIỆN VỚI NGƯỜI DÙNG -->
+        <div id="wf-success-branch-panel" style="display:none;">
+
+          <!-- Thanh chuyển đổi góc nhìn kết quả gọn gàng, thân thiện -->
+          <div class="result-subnav">
+            <div class="result-subnav-tabs">
+              <button type="button" class="subnav-btn active" data-subview="subview-solutions"
+                onclick="window.switchResultSubview('subview-solutions')">
+                💡 1. Báo cáo &amp; Đề xuất Giải pháp
+              </button>
+              <button type="button" class="subnav-btn" data-subview="subview-dashboard"
+                onclick="window.switchResultSubview('subview-dashboard')">
+                📊 2. Dashboard KPI &amp; Biểu đồ Khám phá
+              </button>
+              <button type="button" class="subnav-btn" data-subview="subview-cleaning"
+                onclick="window.switchResultSubview('subview-cleaning')">
+                🧹 3. Làm sạch &amp; Hồ sơ Cột Dữ liệu
+              </button>
+              <button type="button" class="subnav-btn" data-subview="subview-copilot"
+                onclick="window.switchResultSubview('subview-copilot')">
+                💬 4. Hỏi đáp với Dữ liệu (AI Copilot)
+              </button>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="badge badge-success" id="wf-step4-badge">3. Hợp lệ (Yes)</span>
+              <div id="wf-adjustment-pills"></div>
+            </div>
+          </div>
+
+          <!-- ================================================================ -->
+          <!-- GÓC NHÌN 1 (MẶC ĐỊNH): BÁO CÁO PHÂN TÍCH & ĐỀ XUẤT GIẢI PHÁP     -->
+          <!-- ================================================================ -->
+          <div id="subview-solutions" class="result-subview active">
+
+            <!-- Banner truy cập nhanh Trợ lý Data Copilot -->
+            <div class="copilot-quick-banner" onclick="window.switchResultSubview('subview-copilot')"
+              title="Bấm để mở Trợ lý Hỏi đáp Data Copilot">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font-size:24px;line-height:1;">💬</span>
+                <div>
+                  <strong style="color:#0f172a;font-size:13.5px;display:block;">Trợ lý Data Copilot: Hỏi đáp &amp; tra
+                    cứu bất kỳ số liệu nào</strong>
+                  <span style="color:#475569;font-size:12.5px;">Bấm để hỏi: Kênh nào doanh thu cao nhất? So sánh hiệu
+                    quả giữa 3 miền? Đơn vị nào rủi ro cao?...</span>
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" style="background:#0284c7;white-space:nowrap;">Mở
+                Chat Copilot ▷</button>
+            </div>
+
+            <!-- Tóm tắt Bối cảnh & Chỉ số Định lượng Cốt lõi -->
+            <div id="wf-context-and-stats-summary" style="margin-bottom:20px;"></div>
+
+            <!-- 3 Thẻ Giải pháp Chiến lược theo Mức độ Ưu tiên -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="badge badge-success">Strategic Action Plan &bull; Hệ thống Giải pháp Đề xuất</span>
+                  <div class="card-title" style="margin-top:6px;">🎯 Đề xuất Giải pháp Trọng tâm từ Dữ liệu Đã Phân tích
+                  </div>
+                  <div class="card-subtitle">Phân nhóm giải pháp theo mức độ ưu tiên để doanh nghiệp ra quyết định hành
+                    động ngay</div>
+                </div>
+                <span class="badge badge-info" id="wf-report-version-tag">Báo cáo Giải pháp Phiên bản #1</span>
+              </div>
+
+              <div class="solution-cards-grid" id="wf-priority-solution-cards"></div>
+
+              <!-- Báo cáo tư vấn chuyên sâu từ Google Gemini AI (Định dạng HTML sạch đẹp) -->
+              <div class="gemini-formatted-report" id="wf-executive-report-box"></div>
+            </div>
+
+            <!-- Bảng Đánh giá & Giải pháp Cụ thể trên Từng Kênh / Đơn vị -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="badge badge-info">Record-Level Diagnosis &bull; Chi tiết Từng Đơn vị</span>
+                  <div class="card-title" style="margin-top:6px;">📋 Bảng Chẩn đoán Vấn đề &amp; Giải pháp Hành động
+                    Từng Kênh / Đơn vị</div>
+                  <div class="card-subtitle">Dữ liệu đã được làm sạch, chấm điểm sức khỏe và gắn giải pháp xử lý cho
+                    từng bản ghi</div>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mã / Khu vực</th>
+                      <th>Kênh / Đơn vị Phân tích</th>
+                      <th>Các Chỉ số Định lượng Đã Làm sạch</th>
+                      <th style="text-align:center;">Điểm Hiệu quả</th>
+                      <th>Đánh giá của Agent</th>
+                      <th>Chẩn đoán Vấn đề &amp; Đề xuất Giải pháp Cụ thể</th>
+                    </tr>
+                  </thead>
+                  <tbody id="wf-processed-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================ -->
+          <!-- GÓC NHÌN 2: DASHBOARD KPI, XU HƯỚNG THÁNG & KHÁM PHÁ THEO NHÓM   -->
+          <!-- ================================================================ -->
+          <div id="subview-dashboard" class="result-subview">
+            <div class="kpi-grid" id="dynamic-kpi-container"></div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="badge badge-success">Executive Visuals &bull; Xu hướng &amp; Cơ cấu</span>
+                  <div class="card-title" style="margin-top:6px;">📈 Biểu đồ Xu hướng theo Kỳ &amp; Tỷ trọng Đóng góp
+                  </div>
+                </div>
+              </div>
+              <div id="bi-exec-dashboard-visuals"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="badge badge-info">Interactive Group-By Explorer</span>
+                  <div class="card-title" style="margin-top:6px;">🔍 Khám phá &amp; So sánh Số liệu Theo Nhóm Tương tác
+                  </div>
+                  <div class="card-subtitle">Tùy chọn chiều phân nhóm và phép tính để tự động vẽ biểu đồ so sánh</div>
+                </div>
+              </div>
+
+              <div class="chart-controls-bar">
+                <div>
+                  <label class="bi-field-label" for="exp-group-col">Nhóm theo chiều (Dimension)</label>
+                  <select id="exp-group-col" class="bi-input" onchange="window.updateInteractiveGroupChart()"></select>
+                </div>
+                <div>
+                  <label class="bi-field-label" for="exp-agg-mode">Phép tổng hợp</label>
+                  <select id="exp-agg-mode" class="bi-input" onchange="window.updateInteractiveGroupChart()">
+                    <option value="sum">Tổng (Sum)</option>
+                    <option value="mean">Trung bình (Mean)</option>
+                    <option value="count">Số dòng bản ghi (Count)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="bi-field-label" for="exp-metric-col">Cột chỉ số định lượng (Metric)</label>
+                  <select id="exp-metric-col" class="bi-input" onchange="window.updateInteractiveGroupChart()"></select>
+                </div>
+              </div>
+
+              <div id="bi-interactive-group-chart"></div>
+            </div>
+          </div>
+
+          <!-- ================================================================ -->
+          <!-- GÓC NHÌN 3: QUY TẮC LÀM SẠCH & HỒ SƠ THỐNG KÊ TỪNG CỘT           -->
+          <!-- ================================================================ -->
+          <div id="subview-cleaning" class="result-subview">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="badge badge-info">Data Cleaning &amp; Quality Audit</span>
+                  <div class="card-title" style="margin-top:6px;">🧹 Quy tắc Làm sạch &amp; Kiểm định Chất lượng Dữ liệu
+                  </div>
+                  <div class="card-subtitle">Bật/tắt các quy tắc bên dưới để Agent tự động lọc lại dữ liệu và cập nhật
+                    báo cáo</div>
+                </div>
+              </div>
+
+              <div class="cleaning-options-grid">
+                <label class="clean-option-card">
+                  <input type="checkbox" id="clean-opt-trim" checked onchange="window.onCleaningOptionChange()" />
+                  <div>
+                    <strong>Cắt khoảng trắng &amp; Chuẩn hóa</strong>
+                    <small>Xóa khoảng trắng thừa ở đầu/cuối mỗi ô</small>
+                  </div>
+                </label>
+                <label class="clean-option-card">
+                  <input type="checkbox" id="clean-opt-empty" checked onchange="window.onCleaningOptionChange()" />
+                  <div>
+                    <strong>Xóa dòng trống</strong>
+                    <small>Loại bỏ các dòng không chứa dữ liệu</small>
+                  </div>
+                </label>
+                <label class="clean-option-card">
+                  <input type="checkbox" id="clean-opt-duplicates" checked onchange="window.onCleaningOptionChange()" />
+                  <div>
+                    <strong>Xóa dòng trùng lặp</strong>
+                    <small>Chỉ giữ bản ghi đầu tiên, xóa bản sao</small>
+                  </div>
+                </label>
+                <label class="clean-option-card">
+                  <input type="checkbox" id="clean-opt-canceled" checked onchange="window.onCleaningOptionChange()" />
+                  <div>
+                    <strong>Lọc bỏ Đơn hủy</strong>
+                    <small>Tách các đơn hủy khỏi phép tính hiệu quả</small>
+                  </div>
+                </label>
+              </div>
+
+              <div id="bi-cleaning-audit-summary"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="badge badge-info">Column Profiling</span>
+                  <div class="card-title" style="margin-top:6px;">📋 Hồ sơ Thống kê Chi tiết Từng Cột Dữ liệu</div>
+                </div>
+              </div>
+              <div id="bi-column-profile-table"></div>
+            </div>
+          </div>
+
+          <!-- ================================================================ -->
+          <!-- GÓC NHÌN 4: TRỢ LÝ HỎI ĐÁP VỚI DỮ LIỆU (AI DATA COPILOT)           -->
+          <!-- ================================================================ -->
+          <div id="subview-copilot" class="result-subview">
+            <div class="card copilot-container-card">
+
+              <!-- Header Copilot -->
+              <div class="copilot-card-header">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div class="copilot-bot-avatar">🤖</div>
+                  <div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                      <strong style="font-size:16px;color:#0f172a;">DataMind AI Copilot — Hỏi Đáp Số Liệu Trực
+                        Tiếp</strong>
+                      <span class="badge badge-success" style="font-size:11px;">● Trực tuyến &bull; Đã nạp dữ liệu
+                        sạch</span>
+                    </div>
+                    <div style="font-size:12.5px;color:#64748b;margin-top:2px;">
+                      Truy vấn thông minh theo ngôn ngữ tự nhiên: so sánh doanh thu, chi phí, khu vực và nhận định chiến
+                      lược tức thì.
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:8px;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="window.clearCopilotChatHistory()"
+                    title="Xóa lịch sử hội thoại">
+                    🗑️ Xóa hội thoại
+                  </button>
+                </div>
+              </div>
+
+              <!-- Gợi ý câu hỏi nhanh -->
+              <div class="copilot-prompts-bar">
+                <span class="copilot-prompts-title">💡 Gợi ý câu hỏi nhanh:</span>
+                <div class="copilot-chips-wrap">
+                  <button type="button" class="copilot-chip-btn"
+                    onclick="window.askCopilotPrompt('Kênh nào có doanh thu cao nhất và thấp nhất? Chi tiết các chỉ số ra sao?')">
+                    🏆 Kênh doanh thu cao / thấp nhất?
+                  </button>
+                  <button type="button" class="copilot-chip-btn"
+                    onclick="window.askCopilotPrompt('So sánh tổng doanh thu, chi phí và hiệu quả hoạt động giữa 3 miền Bắc, Trung, Nam?')">
+                    🗺️ So sánh hiệu quả 3 miền?
+                  </button>
+                  <button type="button" class="copilot-chip-btn"
+                    onclick="window.askCopilotPrompt('Những kênh nào đang có tỷ lệ hủy đơn cao bất thường và giải pháp khắc phục là gì?')">
+                    🚨 Kênh nào tỷ lệ hủy đơn cao?
+                  </button>
+                  <button type="button" class="copilot-chip-btn"
+                    onclick="window.askCopilotPrompt('Kênh nào đang tiêu tốn nhiều chi phí vận hành nhất và có nguy cơ rò rỉ lợi nhuận?')">
+                    💸 Kênh chi phí cao &amp; rủi ro?
+                  </button>
+                  <button type="button" class="copilot-chip-btn"
+                    onclick="window.askCopilotPrompt('Tổng hợp các chỉ số tài chính cốt lõi toàn hệ thống: Tổng doanh thu, tổng chi phí và biên lợi nhuận ước tính?')">
+                    📊 Tổng quan tài chính toàn hệ thống?
+                  </button>
+                </div>
+              </div>
+
+              <!-- Khung hội thoại tin nhắn -->
+              <div class="copilot-chat-stream" id="copilot-chat-messages">
+                <!-- Tin nhắn được nạp động qua JavaScript -->
+              </div>
+
+              <!-- Thanh nhập câu hỏi -->
+              <div class="copilot-input-area">
+                <div class="copilot-input-box">
+                  <input type="text" id="copilot-user-input" class="copilot-input-field"
+                    placeholder="Nhập câu hỏi về số liệu, kênh, khu vực hoặc chiến lược... (Nhấn Enter để gửi)"
+                    onkeydown="if(event.key === 'Enter') window.sendCopilotMessage()" />
+                  <button type="button" class="copilot-submit-btn" id="copilot-submit-button"
+                    onclick="window.sendCopilotMessage()">
+                    <span>Gửi câu hỏi</span>
+                    <span style="font-size:14px;">▷</span>
+                  </button>
+                </div>
+                <div class="copilot-hint-text">
+                  ✨ Gợi ý: Bạn có thể hỏi về bất kỳ tên kênh (VD: Showroom Hà Nội, Shopee), khu vực (Miền Bắc, Miền
+                  Nam), hoặc chỉ số (Doanh thu, Chi phí, Đơn hủy).
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ================================================================ -->
+          <!-- BƯỚC 4: NGƯỜI DÙNG ĐÁNH GIÁ KẾT QUẢ & PHẢN HỒI AGENT (LUÔN HIỆN)  -->
+          <!-- ================================================================ -->
+          <div class="feedback-loop-box" id="wf-feedback-section">
+            <div
+              style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+              <div>
+                <span class="badge badge-warning">Bước 4 &bull; Đánh giá &amp; Phản hồi Agent (Human-in-the-Loop)</span>
+                <h3 style="font-size:17px;font-weight:800;margin-top:6px;color:var(--text-primary);">
+                  4. Đánh giá Kết quả &amp; Phản hồi cho Agent (Để xử lý lại nếu cần)
+                </h3>
+                <p style="font-size:13px;color:var(--text-secondary);margin-top:2px;">
+                  Nếu bạn thấy Agent phân tích số liệu hoặc đề xuất giải pháp chưa đúng ý, hãy nhập phản hồi bên dưới để
+                  <strong>Agent xử lý lại dữ liệu và cập nhật báo cáo giải pháp</strong>.
+                </p>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary" style="background:#059669;"
+                  onclick="window.approveAndGoToExportStep()">
+                  ✅ Duyệt Báo cáo — Mở Bước 5: Xuất Kết quả
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:7px;">
+                ⚡ Chọn nhanh tình huống phản hồi mẫu để kiểm nghiệm khả năng xử lý lại của Agent:
+              </div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                <button type="button" class="chip-btn"
+                  onclick="window.fillSampleFeedback('Kênh CH-02 đang có tỷ lệ hủy đơn 8.9% và chi phí sàn quá cao, hãy chuyển CH-02 sang nhóm Cảnh báo Đỏ và đề xuất cắt giảm 30% ngân sách quảng cáo sàn.')">
+                  Phản hồi 1: Chuyển CH-02 sang Cảnh báo Đỏ &amp; giảm phí quảng cáo
+                </button>
+                <button type="button" class="chip-btn"
+                  onclick="window.fillSampleFeedback('Chỉ giữ lại và phân tích chuyên sâu các kênh thuộc khu vực Miền Bắc để lập kế hoạch tối ưu riêng.')">
+                  Phản hồi 2: Lọc chỉ phân tích khu vực Miền Bắc
+                </button>
+                <button type="button" class="chip-btn"
+                  onclick="window.fillSampleFeedback('Bổ sung giải pháp bắt buộc: Áp dụng xác thực đơn hàng COD tự động để giảm tỷ lệ hủy đơn xuống dưới 3% trong 30 ngày tới.')">
+                  Phản hồi 3: Bổ sung giải pháp giảm hủy đơn COD &lt; 3%
+                </button>
+                <button type="button" class="chip-btn"
+                  onclick="window.fillSampleFeedback('Kênh CH-08 đã thanh lý xong hàng tồn kho sáng nay, hãy nâng đánh giá CH-08 lên nhóm Hiệu quả Tốt / Ưu tiên.')">
+                  Phản hồi 4: Nâng hạng CH-08 sau khi thanh lý tồn kho
+                </button>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+              <textarea id="wf-feedback-input" class="textarea-input" style="flex:1;min-height:84px;"
+                placeholder="Nhập phản hồi của bạn nếu thấy Agent xử lý dữ liệu hoặc đề xuất giải pháp chưa đúng..."></textarea>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <button type="button" class="btn btn-primary" onclick="window.submitAgentFeedbackAndReprocess()">
+                  🔄 Áp dụng Phản hồi &amp; Xử lý lại
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetWorkflowFeedbackHistory()">
+                  ↺ Khôi phục kết quả gốc (Lần #1)
+                </button>
+              </div>
+            </div>
+
+            <div id="wf-feedback-history-log" style="margin-top:12px;display:none;"></div>
+          </div>
+
+          <!-- BƯỚC 5 (END): ĐÁNH GIÁ & XUẤT KẾT QUẢ DỮ LIỆU VÀ BÁO CÁO -->
+          <div class="card" id="wf-export-final-panel"
+            style="margin-top:20px;display:none;border:2px solid #059669;background:#ecfdf5;">
+            <div class="card-header">
+              <div>
+                <span class="badge badge-success">5. Đánh giá &amp; Xuất &bull; Hoàn tất Quy trình</span>
+                <div class="card-title" style="margin-top:6px;">5. Xuất Kết quả Dữ liệu Đã Xử lý &amp; Báo cáo Đề xuất
+                  Giải pháp BI</div>
+                <div class="card-subtitle">
+                  Bạn đã xác nhận kết quả báo cáo. Tải về bộ dữ liệu sạch và báo cáo giải pháp hoàn chỉnh bên dưới.
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" style="background:#059669;"
+                onclick="window.exportWorkflowProcessedCSV()">
+                📥 Xuất File Dữ liệu Đã Làm sạch (.CSV chuẩn Excel)
+              </button>
+              <button type="button" class="btn btn-primary" style="background:#2563eb;"
+                onclick="window.exportWorkflowReportWord()">
+                📄 Tải Báo cáo Bản Word (.doc)
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+      <!-- HẾT CỘT PHẢI NỘI DUNG LÀM VIỆC CHÍNH -->
+
+    </div>
+    <!-- HẾT BI-WORKSPACE-LAYOUT -->
+
+  </main>
+
+  <!-- MODAL XUẤT BÁO CÁO ĐỀ XUẤT GIẢI PHÁP -->
+  <div class="modal-backdrop" id="report-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size:15.5px;font-weight:700;">📑 Báo cáo Phân tích Dữ liệu &amp; Đề xuất Giải pháp BI</h3>
+        <button class="btn btn-secondary btn-sm" onclick="window.closeExecutiveReportModal()">✕ Đóng</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="report-modal-textarea" class="textarea-input"
+          style="min-height:420px;font-family:monospace;font-size:12.5px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="window.copyExecutiveReport()">📋 Sao chép Báo cáo</button>
+        <button class="btn btn-primary" style="background:#2563eb;" onclick="window.exportWorkflowReportWord()">📄 Tải
+          Báo cáo Bản Word (.doc)</button>
+        <button class="btn btn-secondary" onclick="window.exportWorkflowReportMarkdown()">💾 Tải File Markdown
+          (.md)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="mock-data.js"></script>
+  <script src="agent-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Báo Cáo Slide Quy Trình Hoạt Động AI Agent BI Studio</title>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(18, 25, 41, 0.85);
+      --bg-card-hover: rgba(28, 38, 62, 0.95);
+      --border-color: rgba(56, 189, 248, 0.2);
+      --border-accent: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #0284c7;
+      --primary-glow: rgba(2, 132, 199, 0.35);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* BACKGROUND TECH MESH */
+    .bg-mesh {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(2, 132, 199, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* TOP HEADER BAR */
+    .deck-header {
+      position: relative;
+      z-index: 10;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(9, 13, 22, 0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 15px;
+      color: #38bdf8;
+      letter-spacing: -0.2px;
+    }
+
+    .brand-badge span.dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      display: inline-block;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-header:hover {
+      background: rgba(2, 132, 199, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    /* MAIN PRESENTATION CONTAINER */
+    .deck-viewport {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 40px;
+    }
+
+    .slide {
+      position: absolute;
+      width: 94%;
+      max-width: 1280px;
+      height: 84vh;
+      max-height: 740px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 40px 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(2, 132, 199, 0.08);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: scale(0.96) translateY(20px);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* SLIDE TYPOGRAPHY */
+    .slide-badge-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      width: fit-content;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .slide-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .slide-subtitle {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 24px;
+      max-width: 980px;
+    }
+
+    /* SLIDE GRID LAYOUTS */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      flex: 1;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      flex: 1;
+    }
+
+    .grid-5col {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      flex: 1;
+    }
+
+    /* CARD COMPONENTS */
+    .deck-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.25s;
+    }
+
+    .deck-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-icon {
+      font-size: 26px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .card-list {
+      list-style: none;
+      margin-top: 10px;
+      font-size: 12.8px;
+      color: #cbd5e1;
+    }
+
+    .card-list li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      line-height: 1.45;
+    }
+
+    .card-list li span.bullet {
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    /* WORKFLOW HORIZONTAL STEPPER */
+    .wf-pipeline {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      margin: 10px 0 20px 0;
+    }
+
+    .wf-pipe-step {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid rgba(56, 189, 248, 0.18);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .wf-pipe-step:hover {
+      border-color: #38bdf8;
+      background: rgba(2, 132, 199, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .step-num-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .step-main-text {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 4px;
+    }
+
+    .step-sub-text {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* DATA CLEANING TABLE */
+    .deck-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .deck-table th {
+      background: rgba(30, 41, 59, 0.8);
+      color: #38bdf8;
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .deck-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #e2e8f0;
+      line-height: 1.45;
+    }
+
+    .deck-table tr:hover td {
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tag-green { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-blue { background: rgba(2, 132, 199, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .tag-amber { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .tag-red { background: rgba(239, 68, 68, 0.18); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* CODE & DATA SNIPPETS */
+    .code-preview {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11.5px;
+      color: #38bdf8;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    /* BOTTOM CONTROLLER BAR */
+    .deck-footer {
+      position: relative;
+      z-index: 10;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(9, 13, 22, 0.8);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .slide-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .slide-dot.active {
+      width: 26px;
+      border-radius: 10px;
+      background: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+
+    .deck-nav-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: #0284c7;
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.5);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar-wrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3.5px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, #0284c7, #38bdf8, #10b981);
+      box-shadow: 0 0 8px #38bdf8;
+      transition: width 0.3s ease;
+    }
+
+    /* COVER SLIDE SPECIAL STYLING */
+    .cover-layout {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100%;
+      padding: 20px 20px;
+    }
+
+    .cover-title {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 18px;
+    }
+
+    .cover-subtitle {
+      font-size: 18px;
+      color: #94a3b8;
+      line-height: 1.6;
+      max-width: 860px;
+      margin-bottom: 32px;
+    }
+
+    .cover-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .meta-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-box span.label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .meta-box span.val {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    /* CHẾ ĐỘ CHỈNH SỬA TRỰC TIẾP TRÊN SLIDE (INLINE EDITING) */
+    body.edit-mode-on {
+      user-select: text;
+    }
+
+    body.edit-mode-on .editable-target {
+      cursor: text;
+      transition: outline 0.15s ease, background 0.15s ease;
+    }
+
+    body.edit-mode-on .editable-target:hover {
+      outline: 1.5px dashed rgba(56, 189, 248, 0.7);
+      outline-offset: 3px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    body.edit-mode-on .editable-target:focus {
+      outline: 2px solid #38bdf8;
+      outline-offset: 3px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .btn-edit-mode {
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+    }
+
+    .btn-edit-mode:hover {
+      background: rgba(2, 132, 199, 0.3);
+      border-color: #38bdf8;
+    }
+
+    body.edit-mode-on .btn-edit-mode {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      border-color: #34d399;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .edit-toolbar-subbar {
+      display: none;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 7px 28px;
+      gap: 12px;
+      align-items: center;
+      z-index: 9;
+      backdrop-filter: blur(8px);
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    body.edit-mode-on .edit-toolbar-subbar {
+      display: flex;
+    }
+
+    .subbar-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+
+    .subbar-btn:hover {
+      background: rgba(2, 132, 199, 0.3);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    .deck-toast {
+      position: fixed;
+      bottom: 76px;
+      right: 28px;
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      color: #f8fafc;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .deck-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-mesh"></div>
+
+  <!-- HEADER -->
+  <header class="deck-header">
+    <div class="brand-badge">
+      <span class="dot"></span>
+      <span>DATAMIND AI STUDIO &bull; BÁO CÁO QUY TRÌNH WORKFLOW</span>
+    </div>
+    <div class="header-controls">
+      <button class="btn-edit-mode" id="btn-edit-toggle" onclick="toggleEditMode()" title="Bật/Tắt chế độ chỉnh sửa trực tiếp nội dung trên slide">
+        <span id="edit-icon">✏️</span>
+        <span id="edit-label">Chỉnh sửa Slide</span>
+      </button>
+      <a href="index.html" class="btn-header" target="_blank" title="Mở hệ thống thực tế trên Localhost">
+        🚀 Mở Hệ Thống Localhost:8080
+      </a>
+      <button class="btn-header" onclick="toggleFullscreen()" title="Chuyển chế độ Toàn màn hình (F)">
+        ⛶ Toàn màn hình
+      </button>
+      <button class="btn-header" onclick="window.print()" title="In hoặc lưu Slide thành PDF">
+        🖨️ Xuất PDF / In
+      </button>
+    </div>
+  </header>
+
+  <!-- THANH CÔNG CỤ ĐỊNH DẠNG & LƯU TRỮ KHI ĐANG Ở CHẾ ĐỘ CHỈNH SỬA -->
+  <div class="edit-toolbar-subbar" id="edit-subbar">
+    <span style="font-size:12px;color:#38bdf8;font-weight:700;">
+      ✏️ ĐANG BẬT CHỈNH SỬA: Click vào bất kỳ chữ, tiêu đề, thẻ hoặc ô bảng nào để sửa trực tiếp!
+    </span>
+
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button type="button" class="subbar-btn" onclick="execFormat('bold')" title="Chữ đậm (Ctrl+B)">
+        <strong>B</strong>
+      </button>
+      <button type="button" class="subbar-btn" onclick="execFormat('italic')" title="Chữ nghiêng (Ctrl+I)">
+        <em>I</em>
+      </button>
+      <button type="button" class="subbar-btn" onclick="execFormat('underline')" title="Gạch chân (Ctrl+U)">
+        <u>U</u>
+      </button>
+      <button type="button" class="subbar-btn" onclick="execFormat('insertUnorderedList')" title="Thêm gạch đầu dòng">
+        • Danh sách
+      </button>
+    </div>
+
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+      <button type="button" class="subbar-btn" style="background:#059669;border-color:#10b981;" onclick="saveSlideEdits(true)" title="Lưu thay đổi vào trình duyệt (Ctrl+S)">
+        💾 Lưu Thay Đổi
+      </button>
+      <button type="button" class="subbar-btn" style="background:#0284c7;border-color:#38bdf8;" onclick="downloadEditedHTML()" title="Tải file HTML đã chỉnh sửa về máy">
+        📥 Tải File HTML Đã Sửa
+      </button>
+      <button type="button" class="subbar-btn" style="background:#ef4444;border-color:#f87171;" onclick="resetSlideEdits()" title="Khôi phục lại toàn bộ nội dung mẫu ban đầu">
+        ↺ Khôi Phục Gốc
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST THÔNG BÁO NHANH -->
+  <div class="deck-toast" id="deck-toast">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">Đã lưu thay đổi!</span>
+  </div>
+
+  <!-- VIEWPORT CONTAINING SLIDES -->
+  <main class="deck-viewport">
+
+    <!-- SLIDE 1: COVER -->
+    <section class="slide active" id="slide-1">
+      <div class="cover-layout">
+        <div class="slide-badge-category">✦ Báo cáo Kiến trúc &amp; Quy trình Hoạt động</div>
+        <h1 class="cover-title">
+          HỆ THỐNG AI AGENT PHÂN TÍCH DỮ LIỆU &amp; ĐỀ XUẤT GIẢI PHÁP BI
+        </h1>
+        <p class="cover-subtitle">
+          Quy trình làm việc 5 bước khép kín (End-to-End Workflow): Tiếp nhận bối cảnh doanh nghiệp, làm sạch số liệu đa chiều, rẽ nhánh chẩn đoán kiểm định, tương tác Human-in-the-Loop và xuất báo cáo điều hành.
+        </p>
+
+        <div class="cover-meta">
+          <div class="meta-box">
+            <span class="label">Bối cảnh doanh nghiệp</span>
+            <span class="val">Bán lẻ đa kênh 3 miền (Bắc - Trung - Nam)</span>
+          </div>
+          <div class="meta-box">
+            <span class="label">Cơ chế cốt lõi</span>
+            <span class="val">Quy tắc chuẩn hóa định lượng + Google Gemini AI</span>
+          </div>
+          <div class="meta-box">
+            <span class="label">Nền tảng vận hành</span>
+            <span class="val">DataMind BI Studio (Localhost Hub: 8080)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: GIỚI THIỆU: MỤC ĐÍCH & ĐỐI TƯỢNG NGƯỜI DÙNG -->
+    <section class="slide" id="slide-2">
+      <div class="slide-badge-category">Phần 1 &bull; Giới thiệu Tổng quan</div>
+      <h2 class="slide-title">Mục Đích Phát Triển &amp; Đối Tượng Người Dùng</h2>
+      <p class="slide-subtitle">
+        Xác định rõ ràng giá trị tháo gỡ điểm nghẽn thực tế và chân dung các nhóm đối tượng thụ hưởng giải pháp trong doanh nghiệp.
+      </p>
+
+      <div class="grid-2col">
+        <!-- Cột Trái: Mục đích -->
+        <div class="deck-card">
+          <span class="card-icon">🎯</span>
+          <h3 class="card-title">Mục Đích Của AI Agent</h3>
+          <p class="card-desc">
+            Thay thế các quy trình đối soát thủ công rời rạc bằng một Agent thông minh có khả năng đọc hiểu bối cảnh và tính toán số liệu chính xác:
+          </p>
+          <ul class="card-list" style="margin-top:14px;">
+            <li>
+              <span class="bullet">✔</span>
+              <span><strong>Định lượng hóa bối cảnh:</strong> Gắn kết bài toán kinh doanh thực tế với dữ liệu bảng thô (CSV/Excel/JSON), loại bỏ suy diễn cảm tính.</span>
+            </li>
+            <li>
+              <span class="bullet">✔</span>
+              <span><strong>Chuẩn hóa dữ liệu tự động:</strong> Loại bỏ dòng rác, tiền tệ hỗn hợp, phát hiện và tách đơn hủy khỏi doanh thu thuần.</span>
+            </li>
+            <li>
+              <span class="bullet">✔</span>
+              <span><strong>Chẩn đoán lỗi minh bạch:</strong> Nếu dữ liệu sai cấu trúc hoặc thiếu số liệu, chỉ rõ chính xác lỗi ở đâu và nguyên nhân là gì.</span>
+            </li>
+            <li>
+              <span class="bullet">✔</span>
+              <span><strong>Đề xuất giải pháp hành động (Actionable):</strong> Đưa ra kế hoạch xử lý ngắn hạn (1-4 tuần) và chiến lược dài hạn cho từng nhóm đối tượng.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Cột Phải: Đối tượng người dùng -->
+        <div class="deck-card">
+          <span class="card-icon">👥</span>
+          <h3 class="card-title">Đối Tượng Người Dùng Hướng Đến</h3>
+          <p class="card-desc">
+            Phục vụ đa cấp bậc trong doanh nghiệp, từ lãnh đạo cấp cao đến bộ phận thực thi vận hành:
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px;">
+            <div style="background:rgba(255,255,255,0.04);padding:10px 14px;border-radius:8px;border-left:3px solid #38bdf8;">
+              <strong style="color:#38bdf8;font-size:13px;display:block;">1. Ban Lãnh Đạo (CEO, Giám Đốc Điều Hành)</strong>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);padding:10px 14px;border-radius:8px;border-left:3px solid #10b981;">
+              <strong style="color:#10b981;font-size:13px;display:block;">2. Trưởng Phòng Kinh Doanh &amp; Phát Triển Đối Tác</strong>
+              <span style="font-size:12.3px;color:#cbd5e1;">Xác minh năng lực từng điểm bán/kênh phân phối, ngăn chặn xung đột địa bàn bảo hộ và kiểm soát công nợ.</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);padding:10px 14px;border-radius:8px;border-left:3px solid #f59e0b;">
+              <strong style="color:#f59e0b;font-size:13px;display:block;">3. Chuyên Viên BI, Kế Toán Quản Trị &amp; Vận Hành</strong>
+              <span style="font-size:12.3px;color:#cbd5e1;">Tự động hóa 100% công đoạn dọn dẹp số liệu, xuất file dữ liệu sạch Excel và báo cáo Word mà không tốn công gõ lại.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: TỔNG QUAN WORKFLOW 5 BƯỚC -->
+    <section class="slide" id="slide-3">
+      <div class="slide-badge-category">Phần 2 &bull; Trình bày Hoạt Động (Workflow)</div>
+      <h2 class="slide-title">Toàn Cảnh Quy Trình Làm Việc 5 Bước Khép Kín</h2>
+      <p class="slide-subtitle">
+        Cấu trúc luồng làm việc tuyến tính có rẽ nhánh logic và vòng lặp phản hồi thông minh (Human-in-the-Loop Feedback Loop).
+      </p>
+
+      <!-- SƠ ĐỒ 5 BƯỚC NGANG -->
+      <div class="wf-pipeline">
+        <div class="wf-pipe-step">
+          <div class="step-num-pill">1</div>
+          <div class="step-main-text">1. Nhập Dữ Liệu</div>
+          <div class="step-sub-text">Bối cảnh doanh nghiệp &amp; File số liệu (.xlsx, .csv, .json). Ràng buộc bắt buộc nạp data thực.</div>
+        </div>
+
+        <div class="wf-pipe-step">
+          <div class="step-num-pill">2</div>
+          <div class="step-main-text">2. Agent Xử Lý</div>
+          <div class="step-sub-text">Làm sạch số liệu hỗn hợp, định danh cột định lượng, kiểm tra cú pháp và cấu trúc bảng.</div>
+        </div>
+
+        <div class="wf-pipe-step" style="border-color:#f59e0b;">
+          <div class="step-num-pill" style="background:#f59e0b;">3</div>
+          <div class="step-main-text">3. Rẽ Nhánh Kiểm Định</div>
+          <div class="step-sub-text"><span class="tag-badge tag-red">No:</span> Báo lỗi vị trí/nguyên nhân.<br><span class="tag-badge tag-green">Yes:</span> Đạt chuẩn, chuyển sang phân tích.</div>
+        </div>
+
+        <div class="wf-pipe-step">
+          <div class="step-num-pill">4</div>
+          <div class="step-main-text">4. Đánh Giá &amp; Phản Hồi</div>
+          <div class="step-sub-text">Báo cáo chiến lược, Dashboard KPI, Hỏi AI Copilot &amp; phản hồi để Agent tái xử lý.</div>
+        </div>
+
+        <div class="wf-pipe-step">
+          <div class="step-num-pill" style="background:#10b981;">5</div>
+          <div class="step-main-text">5. Đánh Giá &amp; Xuất</div>
+          <div class="step-sub-text">Xuất tệp CSV sạch chuẩn Excel &amp; Báo cáo đề xuất chiến lược bản Word (.doc).</div>
+        </div>
+      </div>
+
+      <!-- ĐẶC ĐIỂM NỔI BẬT CỦA QUY TRÌNH -->
+      <div class="grid-3col">
+        <div class="deck-card">
+          <div class="card-title" style="color:#38bdf8;">🛡️ Ràng Buộc "Data-First"</div>
+          <div class="card-desc">Ngăn chặn hoàn toàn hiện tượng AI hallucination (ảo giác thông tin). Nếu chưa nạp tệp số liệu thực, hệ thống từ chối tính toán và cảnh báo người dùng.</div>
+        </div>
+        <div class="deck-card">
+          <div class="card-title" style="color:#f59e0b;">🔄 Rẽ Nhánh Lỗi Minh Bạch</div>
+          <div class="card-desc">Khi phát hiện dữ liệu lỗi (Nhánh No), Agent không dừng im lặng mà xuất báo cáo chẩn đoán 5 cột định vị chuẩn xác dòng, cột và cách khắc phục.</div>
+        </div>
+        <div class="deck-card">
+          <div class="card-title" style="color:#34d399;">🤝 Vòng Lặp Tương Tác 2 Chiều</div>
+          <div class="card-desc">Người dùng không bị ép buộc theo 1 kịch bản cố định. Có thể ra lệnh phản hồi bổ sung tiêu chí để Agent cập nhật phương án hành động ngay tức thì.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: CHI TIẾT BƯỚC 1 & BƯỚC 2 -->
+    <section class="slide" id="slide-4">
+      <div class="slide-badge-category">Workflow Chi Tiết &bull; Bước 1 &amp; Bước 2</div>
+      <h2 class="slide-title">Bước 1: Nhập Dữ Liệu &amp; Bước 2: Agent Xử Lý</h2>
+      <p class="slide-subtitle">
+        Khung giao diện làm việc 2 cột: Kết nối ngữ nghĩa bối cảnh kinh doanh với các tập số liệu thô đa nguồn.
+      </p>
+
+      <div class="grid-2col">
+        <!-- BƯỚC 1 -->
+        <div class="deck-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span class="step-num-pill">1</span>
+            <h3 class="card-title" style="margin:0;">Bước 1: Tiếp Nhận Bối Cảnh &amp; Dữ Liệu Thô</h3>
+          </div>
+          <p class="card-desc">
+            Người dùng cung cấp thông tin qua khung nhập liệu 2 cột hiện đại:
+          </p>
+          <ul class="card-list">
+            <li>
+              <span class="bullet">▸</span>
+              <span><strong>Cột Trái (Bối Cảnh &amp; Bài Toán):</strong> Nhập bối cảnh mô hình kinh doanh, mục tiêu và nỗi đau (kèm tính năng "Trao đổi phạm vi với AI" để tự động gợi ý câu hỏi cốt lõi).</span>
+            </li>
+            <li>
+              <span class="bullet">▸</span>
+              <span><strong>Cột Phải (Dữ Liệu Thô Đa Định Dạng):</strong> Kéo thả hoặc chọn tệp Excel (.xlsx), CSV (.csv), JSON (.json), hoặc dán trực tiếp.</span>
+            </li>
+            <li>
+              <span class="bullet">▸</span>
+              <span><strong>Bảng Xem Trước Minh Bạch:</strong> Ngay khi nạp file, hệ thống tự động render bảng preview hiển thị 5 dòng đầu tiên, nhận diện số cột và số bản ghi.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- BƯỚC 2 -->
+        <div class="deck-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span class="step-num-pill">2</span>
+            <h3 class="card-title" style="margin:0;">Bước 2: Agent Parsing &amp; Phân Loại Cột</h3>
+          </div>
+          <p class="card-desc">
+            Khi người dùng bấm <strong>"▷ Chạy phân tích BI"</strong>, Agent kích hoạt pipeline xử lý thuật toán:
+          </p>
+          <ul class="card-list">
+            <li>
+              <span class="bullet">▸</span>
+              <span><strong>Phân tích cú pháp (Parser):</strong> Tách dòng, chia cột, giải mã định dạng số có dấu phẩy/chấm ngăn cách hàng ngàn.</span>
+            </li>
+            <li>
+              <span class="bullet">▸</span>
+              <span><strong>Định danh cột tự động:</strong> Phân biệt cột mã (`Ma_Kenh`), cột tên (`Ten_Kenh`), cột phân nhóm (`Khu_Vuc`), và các cột định lượng (`Doanh_Thu`, `Chi_Phi`, `Ton_Kho`, `% Huy`).</span>
+            </li>
+            <li>
+              <span class="bullet">▸</span>
+              <span><strong>Kiểm định chuẩn định lượng:</strong> Kiểm tra xem tập dữ liệu có đủ tối thiểu 1 cột phân loại và 1 cột số liệu hợp lệ hay không để quyết định rẽ nhánh.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: QUY TẮC LÀM SẠCH DỮ LIỆU -->
+    <section class="slide" id="slide-5">
+      <div class="slide-badge-category">Phần 3 &bull; Quy Tắc Làm Sạch Dữ Liệu (Data Cleaning &amp; Audit Rules)</div>
+      <h2 class="slide-title">5 Quy Tắc Vàng Trong Làm Sạch &amp; Kiểm Định Dữ Liệu</h2>
+      <p class="slide-subtitle">
+        Các thuật toán xử lý dữ liệu tự động được xây dựng trực tiếp trong engine, đảm bảo tính toàn vẹn của số liệu kế toán - tài chính.
+      </p>
+
+      <table class="deck-table">
+        <thead>
+          <tr>
+            <th style="width:24%;">Quy Tắc Làm Sạch</th>
+            <th style="width:36%;">Hành Vi Xử Lý Của Agent</th>
+            <th style="width:40%;">Ví Dụ Thực Tế Trước &amp; Sau Xử Lý</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong style="color:#38bdf8;">1. Chuẩn Hóa Số &amp; Tiền Tệ</strong><br>
+              <span class="tag-badge tag-blue">Text ➔ Number</span>
+            </td>
+            <td>Tự động bóc tách ký tự tiền tệ (`đ`, `VNĐ`, `tr.đ`, `$`), dấu phẩy ngăn ngàn, khoảng trắng dư; chuyển về kiểu số thực (float/int).</td>
+            <td>
+              <span style="color:#f87171;">"2,850 VNĐ"</span> ➔ <span style="color:#34d399;font-weight:700;">2850</span><br>
+              <span style="color:#f87171;">" 340.5 tr.đ "</span> ➔ <span style="color:#34d399;font-weight:700;">340.5</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong style="color:#34d399;">2. Khử Trùng Lặp (Deduplication)</strong><br>
+              <span class="tag-badge tag-green">Data Integrity</span>
+            </td>
+            <td>Nhận diện các dòng trùng khớp cả về Mã kênh, Kỳ tháng và Khu vực. Chỉ giữ lại 1 bản ghi duy nhất, đánh dấu dòng trùng vào nhật ký Audit.</td>
+            <td>
+              Phát hiện dòng CH-02 gửi lặp 2 lần trong kỳ `2026-10` ➔ Loại bỏ dòng trùng, tránh tính khống doanh số.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong style="color:#f59e0b;">3. Tách Đơn Hủy / Hoàn COD</strong><br>
+              <span class="tag-badge tag-amber">Revenue Protection</span>
+            </td>
+            <td>Nhận diện cột trạng thái đơn hoặc tỷ lệ hủy đơn (`Ty_Le_Huy_Don_Pct`). Tách riêng đơn hủy ra khỏi công thức tính doanh thu thực thu.</td>
+            <td>
+              Kênh CH-03 có đơn sỉ bị hủy (`19.5%`) ➔ Bóc tách 950 triệu đơn hủy để tính doanh thu thực, gắn nhãn cảnh báo đỏ tồn kho.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong style="color:#f87171;">4. Phát Hiện Giá Trị Bất Thường (Outlier)</strong><br>
+              <span class="tag-badge tag-red">Anomaly Detection</span>
+            </td>
+            <td>Phát hiện số âm phi logic (doanh thu &lt; 0), chi phí vượt quá doanh thu hoặc tỷ lệ hủy vượt ngưỡng an toàn (&gt;8%).</td>
+            <td>
+              Kênh có Doanh thu = <span style="color:#f87171;">-1200</span> hoặc Chi phí chiếm <span style="color:#f87171;">120%</span> doanh thu ➔ Gắn cờ vi phạm điều kiện.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong style="color:#c084fc;">5. Điền Khuyết Thiếu (Imputation)</strong><br>
+              <span class="tag-badge tag-blue">Safe Fallback</span>
+            </td>
+            <td>Đối với các ô bị trống trong cột số, thay thế an toàn bằng `0` hoặc giá trị trung vị, không để bảng bị gãy cấu trúc tính toán.</td>
+            <td>
+              Ô chi phí bị trống `null` ➔ Điền giá trị mặc định `0`, ghi chú cảnh báo vào hồ sơ cột.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SLIDE 6: BƯỚC 3: RẼ NHÁNH KIỂM ĐỊNH YES/NO -->
+    <section class="slide" id="slide-6">
+      <div class="slide-badge-category">Workflow Chi Tiết &bull; Bước 3</div>
+      <h2 class="slide-title">Bước 3: Cơ Chế Rẽ Nhánh Kiểm Định (Yes / No Logic)</h2>
+      <p class="slide-subtitle">
+        Cột mốc quyết định hướng đi của luồng xử lý: Minh bạch lỗi chẩn đoán hoặc chuyển sang tính toán chiến lược.
+      </p>
+
+      <div class="grid-2col">
+        <!-- NHÁNH NO -->
+        <div class="deck-card" style="border-color:rgba(239, 68, 68, 0.4);background:rgba(239, 68, 68, 0.04);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="step-num-pill" style="background:#ef4444;">✕</span>
+              <h3 class="card-title" style="margin:0;color:#f87171;">Nhánh No: Dữ Liệu Lỗi / Không Hợp Lệ</h3>
+            </div>
+            <span class="tag-badge tag-red">Dừng tính toán</span>
+          </div>
+
+          <p class="card-desc">
+            Kích hoạt khi: Tệp không có cột số, file văn bản thuần, mảng JSON rỗng hoặc lỗi cú pháp phân cách dòng:
+          </p>
+
+          <div style="margin-top:12px;background:rgba(0,0,0,0.3);padding:14px;border-radius:10px;border:1px solid rgba(239,68,68,0.2);">
+            <strong style="font-size:12.5px;color:#fca5a5;display:block;margin-bottom:6px;">Báo Cáo Chẩn Đoán Lỗi 5 Cột:</strong>
+            <ul class="card-list" style="font-size:12px;">
+              <li><strong>1. Vị trí lỗi:</strong> Dòng 2, Cột Doanh_Thu.</li>
+              <li><strong>2. Giá trị hiện tại:</strong> `CHU_KHONG_PHAI_SO`.</li>
+              <li><strong>3. Loại lỗi:</strong> Sai kiểu dữ liệu định lượng (NaN).</li>
+              <li><strong>4. Nguyên nhân:</strong> Cột số học chứa chuỗi ký tự chữ.</li>
+              <li><strong>5. Hướng khắc phục:</strong> Chuyển sang định dạng số hoặc sửa tại tệp nguồn.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- NHÁNH YES -->
+        <div class="deck-card" style="border-color:rgba(16, 185, 129, 0.4);background:rgba(16, 185, 129, 0.04);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="step-num-pill" style="background:#10b981;">✓</span>
+              <h3 class="card-title" style="margin:0;color:#34d399;">Nhánh Yes: Dữ Liệu Đạt Chuẩn Hợp Lệ</h3>
+            </div>
+            <span class="tag-badge tag-green">Phân tích chuyên sâu</span>
+          </div>
+
+          <p class="card-desc">
+            Kích hoạt khi dữ liệu đáp ứng đủ tiêu chí số học. Agent tự động tính toán và phân nhóm sức khỏe kinh doanh:
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px;">
+            <div style="background:rgba(16,185,129,0.1);padding:10px 12px;border-radius:8px;border-left:3px solid #10b981;">
+              <strong style="color:#34d399;font-size:12.5px;">🟢 Nhóm Điểm Sáng / Hiệu Quả Tốt (Optimal)</strong>
+              <div style="font-size:11.8px;color:#cbd5e1;margin-top:2px;">Doanh thu cao, biên lợi nhuận ròng tốt, tỷ lệ hủy đơn &lt; 2% (VD: CH-01 Hà Nội, CH-06 TP.HCM).</div>
+            </div>
+            <div style="background:rgba(245,158,11,0.1);padding:10px 12px;border-radius:8px;border-left:3px solid #f59e0b;">
+              <strong style="color:#fbbf24;font-size:12.5px;">🟡 Nhóm Cần Tối Ưu / Kiểm Soát Điều Kiện (Warning)</strong>
+              <div style="font-size:11.8px;color:#cbd5e1;margin-top:2px;">Doanh thu khá nhưng tồn kho luân chuyển chậm hoặc tỷ lệ hủy tiệm cận 6-7% (VD: CH-08 ĐBSCL).</div>
+            </div>
+            <div style="background:rgba(239,68,68,0.1);padding:10px 12px;border-radius:8px;border-left:3px solid #ef4444;">
+              <strong style="color:#f87171;font-size:12.5px;">🔴 Nhóm Cảnh Báo Đỏ / Rủi Ro Nghiêm Trọng (Critical)</strong>
+              <div style="font-size:11.8px;color:#cbd5e1;margin-top:2px;">Tỷ lệ hủy đơn cao vượt 8-9%, chi phí sàn/quảng cáo quá lớn gây thâm hụt (VD: CH-02 Shopee Bắc, CH-05).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: BƯỚC 4: ĐÁNH GIÁ, PHẢN HỒI & HỎI AI -->
+    <section class="slide" id="slide-7">
+      <div class="slide-badge-category">Workflow Chi Tiết &bull; Bước 4</div>
+      <h2 class="slide-title">Bước 4: Đánh Giá, Phản Hồi &amp; Trợ Lý Hỏi AI</h2>
+      <p class="slide-subtitle">
+        Không gian kết quả tương tác đa chiều, hỏi đáp trực tiếp bằng ngôn ngữ tự nhiên và vòng lặp phản hồi lặp lại.
+      </p>
+
+      <div class="grid-2col">
+        <!-- 4 GÓC NHÌN KẾT QUẢ -->
+        <div class="deck-card">
+          <h3 class="card-title" style="color:#38bdf8;">📊 4 Góc Nhìn Kết Quả Trực Quan</h3>
+          <ul class="card-list">
+            <li>
+              <span class="bullet">1.</span>
+              <span><strong>Báo Cáo &amp; Đề Xuất Giải Pháp:</strong> Chẩn đoán nguyên nhân gốc rễ, chia rõ phương án hành động ngắn hạn (1-4 tuần) và chiến lược dài hạn.</span>
+            </li>
+            <li>
+              <span class="bullet">2.</span>
+              <span><strong>Dashboard KPI &amp; Biểu Đồ Khám Phá:</strong> Biểu đồ so sánh doanh thu - chi phí giữa 3 miền Bắc, Trung, Nam, cơ cấu kênh và bảng xếp hạng sức khỏe.</span>
+            </li>
+            <li>
+              <span class="bullet">3.</span>
+              <span><strong>Làm Sạch &amp; Hồ Sơ Cột Dữ Liệu:</strong> Bảng hồ sơ từng cột (min, max, avg, missing count) và nhật ký biến đổi dữ liệu minh bạch.</span>
+            </li>
+            <li>
+              <span class="bullet">4.</span>
+              <span><strong>💬 Hỏi AI (DataMind Copilot):</strong> Trợ lý hỏi đáp trực tiếp, tra cứu số liệu 16 kênh tức thì, so sánh 3 miền và tham vấn chiến lược.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- HUMAN IN THE LOOP FEEDBACK -->
+        <div class="deck-card">
+          <h3 class="card-title" style="color:#10b981;">🔄 Human-in-the-Loop Feedback Loop</h3>
+          <p class="card-desc">
+            Khi người dùng thấy kết quả cần điều chỉnh, có thể nhập phản hồi bằng tiếng Việt tự nhiên:
+          </p>
+
+          <div class="code-preview" style="margin:10px 0;">
+            // Ví dụ phản hồi của Trưởng phòng Kinh doanh:<br>
+            "Kênh CH-02 đang có tỷ lệ hủy đơn 8.9% và chi phí sàn quá cao, hãy chuyển CH-02 sang nhóm Cảnh báo Đỏ và đề xuất cắt giảm 30% ngân sách quảng cáo sàn."
+          </div>
+
+          <p class="card-desc">
+            ➔ <strong>Hành động của Agent:</strong> Đọc hiểu yêu cầu phản hồi, tái phân nhóm kênh CH-02, cập nhật giải pháp mới vào hệ thống và phát hành <strong>Phiên bản Báo cáo #2, #3</strong> mà không làm mất dữ liệu ban đầu.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: BƯỚC 5: XUẤT BÁO CÁO & DỮ LIỆU SẠCH -->
+    <section class="slide" id="slide-8">
+      <div class="slide-badge-category">Workflow Chi Tiết &bull; Bước 5</div>
+      <h2 class="slide-title">Bước 5: Đánh Giá &amp; Xuất Kết Quả Báo Cáo</h2>
+      <p class="slide-subtitle">
+        Bàn giao kết quả phân tích dưới 2 định dạng thực dụng nhất cho khối doanh nghiệp: Dữ liệu sạch Excel và Báo cáo điều hành Word.
+      </p>
+
+      <div class="grid-2col">
+        <!-- XUẤT CSV EXCEL -->
+        <div class="deck-card">
+          <span class="card-icon">📥</span>
+          <h3 class="card-title" style="color:#34d399;">1. Tệp Dữ Liệu Đã Làm Sạch (.CSV Chuẩn Excel)</h3>
+          <p class="card-desc">
+            Toàn bộ các bản ghi sau khi đã qua bộ lọc 5 quy tắc làm sạch được xuất ra tệp CSV chuẩn hóa:
+          </p>
+          <ul class="card-list" style="margin-top:12px;">
+            <li><span class="bullet">✔</span> Cột số học đã chuẩn hóa hoàn toàn (không còn lẫn chữ hay ký tự tiền tệ).</li>
+            <li><span class="bullet">✔</span> Bổ sung thêm các cột phân tích: `Diem_Hieu_Qua`, `Phan_Nhom_Suc_Khoe`, `Giai_Phap_Chinh`.</li>
+            <li><span class="bullet">✔</span> Mã hóa <strong>UTF-8 BOM</strong> chống lỗi font tiếng Việt khi mở trực tiếp bằng Microsoft Excel.</li>
+          </ul>
+        </div>
+
+        <!-- XUẤT BẢN WORD -->
+        <div class="deck-card">
+          <span class="card-icon">📄</span>
+          <h3 class="card-title" style="color:#38bdf8;">2. Báo Cáo Chiến Lược Điều Hành Bản Word (.doc)</h3>
+          <p class="card-desc">
+            Tài liệu báo cáo hoàn chỉnh được xuất dưới dạng Word tương thích với mọi phiên bản Microsoft Office:
+          </p>
+          <ul class="card-list" style="margin-top:12px;">
+            <li><span class="bullet">✔</span> Cấu trúc 4 phần chuẩn mực quản trị: Đọc hiểu bối cảnh, Phân tích số liệu, Đề xuất giải pháp ngắn/dài hạn, Kế hoạch hành động.</li>
+            <li><span class="bullet">✔</span> Định dạng sẵn font chữ Aptos/Calibri, bảng biểu viền nét, thẻ thông tin cảnh báo bắt mắt.</li>
+            <li><span class="bullet">✔</span> Sẵn sàng in ấn, trình ký Ban Giám Đốc hoặc lưu trữ hồ sơ doanh nghiệp.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: DEMO TỪNG BƯỚC VỚI BỘ SỐ LIỆU THỰC TẾ -->
+    <section class="slide" id="slide-9">
+      <div class="slide-badge-category">Phần 4 &bull; Demo Từng Bước Trên Dữ Liệu Bán Lẻ 3 Miền</div>
+      <h2 class="slide-title">Minh Họa Thực Tế Toàn Bộ Luồng Xử Lý (Case Study)</h2>
+      <p class="slide-subtitle">
+        Trải nghiệm trực tiếp trên bộ dữ liệu bán lẻ đa kênh gồm 16 kênh từ CH-01 đến CH-08 phân bổ tại Miền Bắc, Miền Trung và Miền Nam.
+      </p>
+
+      <div class="grid-2col">
+        <!-- DEMO GIAI ĐOẠN 1-3 -->
+        <div class="deck-card">
+          <div style="font-size:12.5px;font-weight:700;color:#38bdf8;margin-bottom:6px;">GIAI ĐOẠN 1: NẠP VÀ LÀM SẠCH</div>
+          <h4 style="font-size:15px;color:#ffffff;margin-bottom:8px;">1. Nạp File &amp; Rẽ Nhánh Kiểm Định</h4>
+          <div class="code-preview" style="margin-bottom:10px;">
+            Nạp: du_lieu_ban_le_da_kenh_3_mien.csv (20 dòng)<br>
+            ➔ Agent nhận diện 7 cột định lượng (Doanh thu, Chi phí, Đơn hàng, % Hủy...)<br>
+            ➔ Phát hiện dòng trùng CH-02 (loại bỏ)<br>
+            ➔ Bóc tách đơn hủy sỉ CH-03 (950 triệu) ra khỏi doanh thu thuần<br>
+            ➔ Kiểm định: ĐẠT CHUẨN (Nhánh Yes)
+          </div>
+          <p class="card-desc">
+            <strong>Kết quả phân nhóm:</strong><br>
+            🟢 <em>Điểm sáng:</em> CH-01 (Showroom Hà Nội), CH-06 (Flagship TP.HCM).<br>
+            🔴 <em>Cảnh báo đỏ:</em> CH-02 (Shopee Bắc - Hủy 8.9%), CH-05 (Telesales Trung - Hủy 9.4%).
+          </p>
+        </div>
+
+        <!-- DEMO GIAI ĐOẠN 4-5 -->
+        <div class="deck-card">
+          <div style="font-size:12.5px;font-weight:700;color:#10b981;margin-bottom:6px;">GIAI ĐOẠN 2: TƯƠNG TÁC &amp; XUẤT FILE</div>
+          <h4 style="font-size:15px;color:#ffffff;margin-bottom:8px;">2. Hỏi AI Copilot &amp; Xuất File Word/Excel</h4>
+          <div class="code-preview" style="margin-bottom:10px;">
+            User hỏi: "So sánh tổng doanh thu và chi phí giữa 3 miền?"<br>
+            ➔ AI Copilot tính toán tức thì:<br>
+               • Miền Bắc: Doanh thu 10.510 tr.đ | Chi phí 1.900 tr.đ<br>
+               • Miền Trung: Doanh thu 8.200 tr.đ | Chi phí 1.625 tr.đ<br>
+               • Miền Nam: Doanh thu 19.300 tr.đ | Chi phí 2.375 tr.đ (Dẫn đầu)<br>
+            ➔ Xuất file Word hoàn tất: Du_Lieu_BI_Bao_Cao_v1.doc
+          </div>
+          <p class="card-desc">
+            Toàn bộ quá trình chỉ mất <strong>dưới 3 giây</strong> từ khi nhấn nút đến khi có báo cáo chiến lược hoàn chỉnh.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: TỔNG KẾT GIÁ TRỊ & KẾT LUẬN -->
+    <section class="slide" id="slide-10">
+      <div class="slide-badge-category">Tổng Kết &bull; Giá Trị Mang Lại</div>
+      <h2 class="slide-title">So Sánh Hiệu Quả &amp; Khả Năng Ứng Dụng Thực Tiễn</h2>
+      <p class="slide-subtitle">
+        Bước đột phá chuyển đổi số từ phân tích thủ công sang trợ lý AI Agent đồng hành cùng nhà quản trị.
+      </p>
+
+      <table class="deck-table" style="margin-bottom:20px;">
+        <thead>
+          <tr>
+            <th style="width:25%;">Tiêu Chí Đánh Giá</th>
+            <th style="width:37%;">Quy Trình Thủ Công Truyền Thống</th>
+            <th style="width:38%;">Hệ Thống DataMind BI AI Agent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Tốc độ xử lý dữ liệu</strong></td>
+            <td>Mất từ 4 - 8 giờ lọc Excel, viết hàm và tổng hợp biểu đồ.</td>
+            <td><strong style="color:#34d399;">Dưới 3 giây</strong> tự động hoàn toàn từ A - Z.</td>
+          </tr>
+          <tr>
+            <td><strong>2. Độ chính xác &amp; Làm sạch</strong></td>
+            <td>Dễ bỏ sót dòng trùng, tính nhầm đơn hủy vào doanh thu.</td>
+            <td><strong style="color:#34d399;">Chuẩn xác 100%</strong> theo 5 quy tắc làm sạch định lượng.</td>
+          </tr>
+          <tr>
+            <td><strong>3. Giá trị đề xuất hành động</strong></td>
+            <td>Chỉ xuất số liệu khô khan, thiếu giải pháp giải quyết tận gốc.</td>
+            <td><strong style="color:#34d399;">Đề xuất giải pháp cụ thể</strong> theo từng nhóm đối tượng kinh doanh.</td>
+          </tr>
+          <tr>
+            <td><strong>4. Tương tác &amp; Điều chỉnh</strong></td>
+            <td>Muốn đổi tiêu chí phải tính toán lại toàn bộ bảng tính từ đầu.</td>
+            <td><strong style="color:#34d399;">Human-in-the-Loop &amp; Hỏi AI:</strong> Chat tự nhiên, tái tính toán linh hoạt.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:linear-gradient(135deg, rgba(2,132,199,0.15) 0%, rgba(16,185,129,0.15) 100%);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <strong style="font-size:15px;color:#f8fafc;display:block;">Sẵn sàng áp dụng cho mọi bài toán và tập dữ liệu doanh nghiệp!</strong>
+          <span style="font-size:13px;color:#94a3b8;">Hệ thống đang chạy trực tiếp trên Localhost Port 8080.</span>
+        </div>
+        <a href="index.html" class="btn-header" style="background:#0284c7;color:#ffffff;padding:10px 20px;font-size:13.5px;" target="_blank">
+          🚀 Mở Ứng Dụng BI Studio Ngay
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CONTROLS & FOOTER -->
+  <footer class="deck-footer">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="slide-counter">
+      SLIDE <span id="current-slide-num" style="color:#38bdf8;font-weight:800;">1</span> / <span id="total-slides-num">10</span>
+    </div>
+
+    <div class="slide-dots" id="slide-dots-container"></div>
+
+    <div class="deck-nav-btns">
+      <button class="nav-btn" id="prev-btn" onclick="prevSlide()" title="Slide trước (Phím ← hoặc PageUp)">‹</button>
+      <button class="nav-btn" id="next-btn" onclick="nextSlide()" title="Slide sau (Phím → hoặc Space hoặc PageDown)">›</button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    const currentNumEl = document.getElementById('current-slide-num');
+    const totalNumEl = document.getElementById('total-slides-num');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const dotsContainer = document.getElementById('slide-dots-container');
+
+    totalNumEl.textContent = totalSlides;
+
+    // TẠO CÁC NÚT DOT CHUYỂN SLIDE NHANH
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.className = 'slide-dot' + (idx === 0 ? ' active' : '');
+      dot.title = `Chuyển đến Slide ${idx + 1}`;
+      dot.onclick = () => goToSlide(idx);
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.slide-dot');
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentSlide);
+      });
+
+      currentNumEl.textContent = currentSlide + 1;
+      progressFill.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateSlide();
+      }
+    }
+
+    // ========================================================================
+    // TÍNH NĂNG CHỈNH SỬA TRỰC TIẾP TRÊN SLIDE (INLINE EDITING & PERSISTENCE)
+    // ========================================================================
+    let isEditMode = false;
+    let autoSaveTimeout = null;
+    const STORAGE_KEY = 'DATAMIND_SLIDE_SAVED_CONTENT_V3';
+
+    // Bật/Tắt chế độ chỉnh sửa
+    function toggleEditMode(forceState) {
+      isEditMode = forceState !== undefined ? forceState : !isEditMode;
+      document.body.classList.toggle('edit-mode-on', isEditMode);
+
+      const btn = document.getElementById('btn-edit-toggle');
+      const icon = document.getElementById('edit-icon');
+      const label = document.getElementById('edit-label');
+
+      if (isEditMode) {
+        if (icon) icon.textContent = "✓";
+        if (label) label.textContent = "Chế độ: ĐANG BẬT";
+        enableEditableElements();
+        showToast("✏️ Đã BẬT chỉnh sửa! Hãy click vào chữ hoặc ô bảng để sửa trực tiếp.", "✏️", 3500);
+      } else {
+        if (icon) icon.textContent = "✏️";
+        if (label) label.textContent = "Chỉnh sửa Slide";
+        disableEditableElements();
+        saveSlideEdits(false);
+        showToast("🔒 Đã TẮT chế độ chỉnh sửa & tự động lưu.", "🔒", 2500);
+      }
+    }
+
+    // Biến tất cả các phần tử văn bản trên slide thành có thể chỉnh sửa
+    function enableEditableElements() {
+      const selectors = [
+        '.slide-title',
+        '.slide-subtitle',
+        '.card-title',
+        '.card-desc',
+        '.card-list li',
+        '.card-list li span:last-child',
+        '.deck-table th',
+        '.deck-table td',
+        '.step-main-text',
+        '.step-sub-text',
+        '.cover-title',
+        '.cover-subtitle',
+        '.meta-box span.val',
+        '.code-preview',
+        '.tag-badge',
+        'strong',
+        'p'
+      ];
+
+      document.querySelectorAll(selectors.join(',')).forEach((el) => {
+        // Tránh gán vào các nút điều hướng hoặc header
+        if (el.closest('.deck-header') || el.closest('.deck-footer') || el.closest('.edit-toolbar-subbar')) return;
+        el.setAttribute('contenteditable', 'true');
+        el.classList.add('editable-target');
+
+        // Bắt sự kiện gõ phím để tự động lưu sau 1.2s
+        el.oninput = () => {
+          clearTimeout(autoSaveTimeout);
+          autoSaveTimeout = setTimeout(() => {
+            saveSlideEdits(false);
+          }, 1200);
+        };
+      });
+    }
+
+    // Tắt contenteditable
+    function disableEditableElements() {
+      document.querySelectorAll('.editable-target').forEach((el) => {
+        el.removeAttribute('contenteditable');
+        el.classList.remove('editable-target');
+      });
+    }
+
+    // Thực hiện định dạng văn bản nhanh (Bold, Italic, List...)
+    function execFormat(command, value = null) {
+      if (!isEditMode) {
+        toggleEditMode(true);
+      }
+      document.execCommand(command, false, value);
+    }
+
+    // Lưu nội dung chỉnh sửa vào LocalStorage
+    function saveSlideEdits(notify = true) {
+      const viewport = document.querySelector('.deck-viewport');
+      if (!viewport) return;
+
+      try {
+        localStorage.setItem(STORAGE_KEY, viewport.innerHTML);
+        if (notify) {
+          showToast("💾 Đã lưu thành công mọi thay đổi vào bộ nhớ!", "✓", 2500);
+        }
+      } catch (err) {
+        console.warn("Storage save error:", err);
+      }
+    }
+
+    // Khôi phục nội dung đã chỉnh sửa từ LocalStorage khi tải trang
+    function restoreSlideEdits() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const viewport = document.querySelector('.deck-viewport');
+        if (viewport) {
+          viewport.innerHTML = saved;
+          // Re-bind lại danh sách slides
+          const newSlides = document.querySelectorAll('.slide');
+          if (newSlides.length > 0) {
+            updateSlide();
+          }
+          showToast("📂 Đã tự động khôi phục nội dung bạn đã chỉnh sửa!", "💡", 3000);
+        }
+      }
+    }
+
+    // Khôi phục về mẫu gốc ban đầu
+    function resetSlideEdits() {
+      if (confirm("Bạn có chắc chắn muốn xóa mọi chỉnh sửa và khôi phục lại nội dung Slide ban đầu không?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    // Xuất / Tải về tệp HTML hoàn chỉnh với nội dung đã chỉnh sửa
+    function downloadEditedHTML() {
+      // Tạm thời tắt thuộc tính contenteditable để file xuất ra sạch đẹp
+      const isCurrentlyEdit = isEditMode;
+      disableEditableElements();
+
+      const cloneDoc = document.documentElement.cloneNode(true);
+
+      // Xóa các thông báo toast hoặc trạng thái tạm
+      const toastEl = cloneDoc.querySelector('#deck-toast');
+      if (toastEl) toastEl.className = 'deck-toast';
+      cloneDoc.querySelector('body')?.classList.remove('edit-mode-on');
+
+      const htmlContent = "<!DOCTYPE html>\n" + cloneDoc.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Bao_Cao_Workflow_AI_Agent_Da_Chinh_Sua.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (isCurrentlyEdit) {
+        enableEditableElements();
+      }
+
+      showToast("📥 Đã tải file HTML đã chỉnh sửa về máy!", "📥", 3000);
+    }
+
+    // Hiển thị Toast thông báo ngắn gọn
+    let toastTimeout = null;
+    function showToast(msg, icon = "✓", duration = 3000) {
+      const toast = document.getElementById('deck-toast');
+      const msgEl = document.getElementById('toast-msg');
+      const iconEl = document.getElementById('toast-icon');
+      if (!toast || !msgEl) return;
+
+      msgEl.textContent = msg;
+      if (iconEl) iconEl.textContent = icon;
+
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // ĐIỀU KHIỂN BẰNG BÀN PHÍM (AN TOÀN KHI ĐANG GÕ CHỮ)
+    window.addEventListener('keydown', (e) => {
+      // 1. Phím tắt Ctrl + S để lưu nhanh
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveSlideEdits(true);
+        return;
+      }
+
+      // 2. Phím tắt Ctrl + E để bật/tắt nhanh chế độ chỉnh sửa
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+        e.preventDefault();
+        toggleEditMode();
+        return;
+      }
+
+      // 3. Nếu người dùng ĐANG CLICK VÀO CHỮ ĐỂ GÕ (contenteditable), KHÔNG được chuyển slide khi nhấn phím mũi tên hay Space!
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.isContentEditable || activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+        return;
+      }
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+
+    // CHẾ ĐỘ TOÀN MÀN HÌNH
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // KHỞI TẠO TRẠNG THÁI BAN ĐẦU
+    restoreSlideEdits();
+    updateSlide();
+  </script>
+</body>
+</html>
